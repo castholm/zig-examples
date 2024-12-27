@@ -1,0 +1,16 @@
+// © 2024 Carl Åstholm
+// SPDX-License-Identifier: MIT
+
+.{
+    .name = "sdl_breakout",
+    .version = "0.0.0",
+    .dependencies = .{
+        .sdl = .{
+            .url = "git+https://github.com/castholm/SDL.git#a8349a6849770926f29023a793d461dce617da66",
+            .hash = "1220529bb3374cc611e241e8d316c8ae52cf5621da0dadd0c4ddd1f7aed023963cd1",
+        },
+    },
+    .paths = .{
+        "",
+    },
+}
