@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 Simple Breakout clone using SDL3 for windowing, audio, input, etc.
 
-Uses the [castholm/SDL](https://github.com/castholm/SDL) port of SDL3 to the Zig build system.
+Uses the [castholm/SDL](https://github.com/castholm/SDL) Zig package, which builds SDL3 from source using the Zig build system.
 
 How quickly can you break all the bricks?
 
