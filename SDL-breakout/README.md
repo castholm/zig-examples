@@ -48,5 +48,5 @@ zig build -Dtarget=x86_64-linux-gnu -Doptimize=ReleaseFast
 
 ## Additional credits
 
-- Sprites: [Puzzle Pack 1.0](https://www.kenney.nl/assets/puzzle-pack) by [Kenney](https://www.kenney.nl/), licensed under CC0
-- Sounds: [Interface Sounds 1.0](https://www.kenney.nl/assets/interface-sounds) by [Kenney](https://www.kenney.nl/), licensed under CC0
+- Sprites: [Puzzle Pack 1.0](https://www.kenney.nl/assets/puzzle-pack) by [Kenney](https://www.kenney.nl/), licensed under [CC0](https://creativecommons.org/publicdomain/zero/1.0/)
+- Sounds: [Interface Sounds 1.0](https://www.kenney.nl/assets/interface-sounds) by [Kenney](https://www.kenney.nl/), licensed under [CC0](https://creativecommons.org/publicdomain/zero/1.0/)

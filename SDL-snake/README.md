@@ -1,6 +1,6 @@
 <!--
-© 2024 Carl Åstholm
-SPDX-License-Identifier: MIT
+SPDX-FileCopyrightText: NONE
+SPDX-License-Identifier: CC0-1.0
 -->
 
 # SDL-snake
