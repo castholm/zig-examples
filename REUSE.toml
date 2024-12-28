@@ -5,19 +5,19 @@
 version = 1
 
 [[annotations]]
-path = "SDL-breakout/preview.gif"
+path = "breakout/preview.gif"
 SPDX-FileCopyrightText = "2024 Carl Åstholm"
 SPDX-License-Identifier = "MIT"
 
 [[annotations]]
 path = [
-    "SDL-breakout/sounds.wav",
-    "SDL-breakout/sprites.bmp"
+    "breakout/sounds.wav",
+    "breakout/sprites.bmp"
 ]
 SPDX-FileCopyrightText = "NONE" # Kenney <www.kenney.nl>
 SPDX-License-Identifier = "CC0-1.0"
 
 [[annotations]]
-path = "SDL-snake/preview.gif"
+path = "snake/preview.gif"
 SPDX-FileCopyrightText = "NONE"
 SPDX-License-Identifier = "CC0-1.0"

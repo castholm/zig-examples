@@ -3,9 +3,9 @@ SPDX-FileCopyrightText: NONE
 SPDX-License-Identifier: CC0-1.0
 -->
 
-# c-cpp-zig
+# C/C++/Zig
 
-Simple demonstration of how to compile C, C++ and Zig code into one single program.
+Demonstrates how to compile a program consisting of a mix of C, C++ and Zig code.
 
 ```
 Entered main.c

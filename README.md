@@ -5,28 +5,28 @@ SPDX-License-Identifier: MIT
 
 # Zig example projects
 
-This is a collection of small example projects intended to showcase the Zig language, the Zig build system and/or projects from the Zig ecosystem:
+This is my collection of example projects showcasing the Zig language, build system and ecosystem.
 
-- [SDL-breakout](#SDL-breakout)
-- [SDL-snake](#SDL-snake)
-- [c-cpp-zig](#c-cpp-zig)
+- [Breakout](#breakout)
+- [Snake](#snake)
+- [C/C++/Zig](#cczig)
 
 
-## [SDL-breakout](SDL-breakout)
+## [Breakout](breakout)
 
-Simple Breakout clone using SDL3 for windowing, audio, input, etc.
+Simple Breakout clone using SDL3 for video, audio, input, etc. How quickly can you break all the bricks?
 
-![Preview](SDL-breakout/preview.gif)
+![Preview](breakout/preview.gif)
 
-## [SDL-snake](SDL-snake)
+## [Snake](snake)
 
-[SDL's own example Snake game](https://examples.libsdl.org/SDL3/demo/01-snake/) written in C, built using the Zig build system.
+[SDL's own example Snake game](https://examples.libsdl.org/SDL3/demo/01-snake/), written in C, built using the Zig build system.
 
-![Preview](SDL-snake/preview.gif)
+![Preview](snake/preview.gif)
 
-## [c-cpp-zig](c-cpp-zig)
+## [C/C++/Zig](c-cpp-zig)
 
-Simple demonstration of how to compile C, C++ and Zig code into one single program.
+Demonstrates how to compile a program consisting of a mix of C, C++ and Zig code.
 
 ```
 Entered main.c

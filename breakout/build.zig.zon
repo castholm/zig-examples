@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 .{
-    .name = "sdl_breakout",
+    .name = "breakout",
     .version = "0.0.0",
     .dependencies = .{
         .sdl = .{

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: CC0-1.0
 
 .{
-    .name = "sdl_snake",
+    .name = "snake",
     .version = "0.0.0",
     .dependencies = .{
         .sdl = .{
