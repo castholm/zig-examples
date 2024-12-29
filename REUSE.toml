@@ -20,7 +20,8 @@ SPDX-License-Identifier = "CC0-1.0"
 [[annotations]]
 path = [
     "snake/preview.gif",
-    "opengl-sdl/preview.png"
+    "opengl-sdl/preview.png",
+    "opengl-glfw/preview.png"
 ]
 SPDX-FileCopyrightText = "NONE"
 SPDX-License-Identifier = "CC0-1.0"

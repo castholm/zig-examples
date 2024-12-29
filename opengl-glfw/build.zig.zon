@@ -1,0 +1,20 @@
+// SPDX-FileCopyrightText: NONE
+// SPDX-License-Identifier: CC0-1.0
+
+.{
+    .name = "zigglgen_example_glfw",
+    .version = "0.0.0",
+    .dependencies = .{
+        .zigglgen = .{
+            .url = "git+https://github.com/castholm/zigglgen.git#7c8ff9e976aa73a41f2969c4593e9e22b6f99e97",
+            .hash = "12209d8a018832bee15d9da29a12fa753d89b56cd843cdf1f39501546c6467e38ba1",
+        },
+        .@"mach-glfw" = .{
+            .url = "https://pkg.machengine.org/mach-glfw/affdd6ae6f2ac2c3b9162784bdad345c561eeeea.tar.gz",
+            .hash = "122022ea6df16700e521078c20d7d01f894c6f967e6c6ce1ea166426b4fc61667de3",
+        },
+    },
+    .paths = .{
+        "invalid", // Not intended for consumption as a package
+    },
+}
