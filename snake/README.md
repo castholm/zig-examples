@@ -5,7 +5,7 @@ SPDX-License-Identifier: CC0-1.0
 
 # Snake
 
-[SDL's own example Snake game](https://examples.libsdl.org/SDL3/demo/01-snake/), written in C, built using the Zig build system.
+[SDL's example Snake game](https://examples.libsdl.org/SDL3/demo/01-snake/), written in C, built using the Zig build system.
 
 Uses the [castholm/SDL](https://github.com/castholm/SDL) Zig package, which builds SDL3 from source using the Zig build system.
 
