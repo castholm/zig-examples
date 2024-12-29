@@ -11,6 +11,6 @@
         },
     },
     .paths = .{
-        "",
+        "invalid", // Not intended for consumption as a package
     },
 }

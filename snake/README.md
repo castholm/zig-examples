@@ -13,7 +13,7 @@ Uses the [castholm/SDL](https://github.com/castholm/SDL) Zig package, which buil
 
 ## Building
 
-Requires Zig `0.12.1`, `0.13.0` or `0.14.0-dev`.
+Requires Zig `0.12.1`, `0.13.0` or `0.14.0-dev` (master).
 
 ```sh
 # Run the game

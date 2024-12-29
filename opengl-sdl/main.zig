@@ -80,8 +80,8 @@ pub fn main() !void {
         gl.ShaderSource(
             vertex_shader,
             2,
-            &[2][*]const u8{ shader_source_preamble, vertex_shader_source },
-            &[2]c_int{ @intCast(shader_source_preamble.len), @intCast(vertex_shader_source.len) },
+            &.{ shader_source_preamble.ptr, vertex_shader_source.ptr },
+            &.{ @intCast(shader_source_preamble.len), @intCast(vertex_shader_source.len) },
         );
         gl.CompileShader(vertex_shader);
 
@@ -91,9 +91,8 @@ pub fn main() !void {
         gl.ShaderSource(
             fragment_shader,
             2,
-            // todo dotbrace
-            &[2][*]const u8{ shader_source_preamble, fragment_shader_source },
-            &[2]c_int{ @intCast(shader_source_preamble.len), @intCast(fragment_shader_source.len) },
+            &.{ shader_source_preamble.ptr, fragment_shader_source.ptr },
+            &.{ @intCast(shader_source_preamble.len), @intCast(fragment_shader_source.len) },
         );
         gl.CompileShader(fragment_shader);
 

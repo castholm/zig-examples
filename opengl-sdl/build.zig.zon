@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: CC0-1.0
 
 .{
-    .name = "breakout",
+    .name = "zigglgen_example_sdl",
     .version = "0.0.0",
     .dependencies = .{
         .zigglgen = .{
