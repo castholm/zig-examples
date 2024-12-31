@@ -19,9 +19,9 @@ Requires Zig `0.12.1`, `0.13.0` or `0.14.0-dev` (master).
 # Run the game
 zig build run
 
-# Build the game for Windows
+# Cross-compile for Windows
 zig build -Dtarget=x86_64-windows-gnu -Doptimize=ReleaseFast
 
-# Build the game for Linux
+# Cross-compile for Linux
 zig build -Dtarget=x86_64-linux-gnu -Doptimize=ReleaseFast
 ```

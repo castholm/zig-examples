@@ -31,7 +31,7 @@ pub fn main() !void {
         glfw.waitEvents();
         if (window.shouldClose()) break :main_loop;
 
-        // This example draws using only scissor boxes and clearing. No actual shaders!
+        // This example draws using only scissor boxes and clearing. No shaders!
         gl.Disable(gl.SCISSOR_TEST);
         if (gl.extensionSupported(.NV_scissor_exclusive)) {
             gl.Disable(gl.SCISSOR_TEST_EXCLUSIVE_NV);

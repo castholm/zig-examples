@@ -6,12 +6,12 @@
     .version = "0.0.0",
     .dependencies = .{
         .zigglgen = .{
-            .url = "git+https://github.com/castholm/zigglgen.git#7c8ff9e976aa73a41f2969c4593e9e22b6f99e97",
+            .url = "git+https://github.com/castholm/zigglgen.git#1c901bef6d312ef1814b8fce3c5a9e9e8e61ac2d",
             .hash = "12209d8a018832bee15d9da29a12fa753d89b56cd843cdf1f39501546c6467e38ba1",
         },
         .sdl = .{
-            .url = "git+https://github.com/castholm/SDL.git#a8349a6849770926f29023a793d461dce617da66",
-            .hash = "1220529bb3374cc611e241e8d316c8ae52cf5621da0dadd0c4ddd1f7aed023963cd1",
+            .url = "git+https://github.com/castholm/SDL.git#ad29033021d98d915bc9396590f8a3535bf752ae",
+            .hash = "12202400e496604d01d30749c4cde49d1a096e0b322e147a9ad52264da3bce8f3f40",
         },
     },
     .paths = .{
