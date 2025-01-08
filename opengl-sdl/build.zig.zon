@@ -10,8 +10,8 @@
             .hash = "12209d8a018832bee15d9da29a12fa753d89b56cd843cdf1f39501546c6467e38ba1",
         },
         .sdl = .{
-            .url = "git+https://github.com/castholm/SDL.git#ad29033021d98d915bc9396590f8a3535bf752ae",
-            .hash = "12202400e496604d01d30749c4cde49d1a096e0b322e147a9ad52264da3bce8f3f40",
+            .url = "git+https://github.com/castholm/SDL.git#2ac69003123388d06e9d0fba19fce74e5e7e4cb8",
+            .hash = "12204a2ee4731b4f44246fbf957fce566c7d5421e68c100d95a3acc304d162e41f20",
         },
     },
     .paths = .{

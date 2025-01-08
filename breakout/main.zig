@@ -150,7 +150,7 @@ pub fn main() !void {
         audio_streams[audio_streams.len - 1] = try errify(c.SDL_CreateAudioStream(&sounds_spec, null));
     }
 
-    try errify(c.SDL_BindAudioStreams(audio_device, @ptrCast(@constCast(audio_streams.ptr)), @intCast(audio_streams.len)));
+    try errify(c.SDL_BindAudioStreams(audio_device, @ptrCast(audio_streams.ptr), @intCast(audio_streams.len)));
 
     var gamepad: ?*c.SDL_Gamepad = detect_gamepad: {
         var count: c_int = 0;
