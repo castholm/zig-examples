@@ -32,7 +32,11 @@ pub fn main() !void {
     try errify(c.SDL_GL_SetAttribute(c.SDL_GL_CONTEXT_PROFILE_MASK, c.SDL_GL_CONTEXT_PROFILE_CORE));
     try errify(c.SDL_GL_SetAttribute(c.SDL_GL_CONTEXT_FLAGS, c.SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG));
 
-    const window: *c.SDL_Window = try errify(c.SDL_CreateWindow("Triangle!", 640, 480, c.SDL_WINDOW_OPENGL | c.SDL_WINDOW_RESIZABLE));
+    // Zig 0.14.0-dev bug workaround
+    const c_SDL_WINDOW_OPENGL: u64 = 0x0000000000000002;
+    const c_SDL_WINDOW_RESIZABLE: u64 = 0x0000000000000020;
+
+    const window: *c.SDL_Window = try errify(c.SDL_CreateWindow("Triangle!", 640, 480, c_SDL_WINDOW_OPENGL | c_SDL_WINDOW_RESIZABLE));
     defer c.SDL_DestroyWindow(window);
 
     const gl_context = try errify(c.SDL_GL_CreateContext(window));
