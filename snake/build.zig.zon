@@ -6,8 +6,8 @@
     .version = "0.0.0",
     .dependencies = .{
         .sdl = .{
-            .url = "git+https://github.com/castholm/SDL.git#60d237ed50e5f195ed792051385ac7dfc4e229e9",
-            .hash = "122096d834053ebbc8a8ba37dd9ac4e8f35790b7aa6e98a72807cf428c3de255dd82",
+            .url = "git+https://github.com/castholm/SDL.git#2bb5f57ea8b8c43eabe514f7bbd3361365ba2ff3",
+            .hash = "1220f653f5b656888b522bf5be06fc3062278767cfa7764e5d00eb559056d65b616f",
         },
     },
     .paths = .{
