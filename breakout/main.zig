@@ -334,13 +334,13 @@ pub fn main() !void {
                 }
             }
 
-            var sounds_to_play = std.EnumSet(enum {
+            var sounds_to_play: std.EnumSet(enum {
                 hit_wall,
                 hit_paddle,
                 hit_brick,
                 win,
                 lose,
-            }).initEmpty();
+            }) = .initEmpty();
 
             // Update the game state
             while (timekeeper.consume()) {
@@ -856,7 +856,7 @@ fn formatSdlDrivers(
 }
 
 /// Converts the return value of an SDL function to an error union.
-inline fn errify(value: anytype) error{SdlError}!switch (@import("shims").typeInfo(@TypeOf(value))) {
+inline fn errify(value: anytype) error{SdlError}!switch (@typeInfo(@TypeOf(value))) {
     .bool => void,
     .pointer, .optional => @TypeOf(value.?),
     .int => |info| switch (info.signedness) {
@@ -865,7 +865,7 @@ inline fn errify(value: anytype) error{SdlError}!switch (@import("shims").typeIn
     },
     else => @compileError("unerrifiable type: " ++ @typeName(@TypeOf(value))),
 } {
-    return switch (@import("shims").typeInfo(@TypeOf(value))) {
+    return switch (@typeInfo(@TypeOf(value))) {
         .bool => if (!value) error.SdlError,
         .pointer, .optional => value orelse error.SdlError,
         .int => |info| switch (info.signedness) {

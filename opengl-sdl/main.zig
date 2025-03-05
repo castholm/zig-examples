@@ -142,7 +142,7 @@ pub fn main() !void {
     gl.EnableVertexAttribArray(position_attrib);
     gl.VertexAttribPointer(
         position_attrib,
-        @import("shims").typeInfo(@TypeOf(@as(Vertex, undefined).position)).array.len,
+        @typeInfo(@TypeOf(@as(Vertex, undefined).position)).array.len,
         gl.FLOAT,
         gl.FALSE,
         @sizeOf(Vertex),
@@ -153,7 +153,7 @@ pub fn main() !void {
     gl.EnableVertexAttribArray(color_attrib);
     gl.VertexAttribPointer(
         color_attrib,
-        @import("shims").typeInfo(@TypeOf(@as(Vertex, undefined).color)).array.len,
+        @typeInfo(@TypeOf(@as(Vertex, undefined).color)).array.len,
         gl.FLOAT,
         gl.FALSE,
         @sizeOf(Vertex),
@@ -198,7 +198,7 @@ pub fn main() !void {
 }
 
 /// Converts the return value of an SDL function to an error union.
-inline fn errify(value: anytype) error{SdlError}!switch (@import("shims").typeInfo(@TypeOf(value))) {
+inline fn errify(value: anytype) error{SdlError}!switch (@typeInfo(@TypeOf(value))) {
     .bool => void,
     .pointer, .optional => @TypeOf(value.?),
     .int => |info| switch (info.signedness) {
@@ -207,7 +207,7 @@ inline fn errify(value: anytype) error{SdlError}!switch (@import("shims").typeIn
     },
     else => @compileError("unerrifiable type: " ++ @typeName(@TypeOf(value))),
 } {
-    return switch (@import("shims").typeInfo(@TypeOf(value))) {
+    return switch (@typeInfo(@TypeOf(value))) {
         .bool => if (!value) error.SdlError,
         .pointer, .optional => value orelse error.SdlError,
         .int => |info| switch (info.signedness) {

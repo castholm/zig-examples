@@ -7,13 +7,15 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const exe = b.addExecutable(.{
-        .name = "zigglgen_example",
+    const exe_mod = b.createModule(.{
         .root_source_file = b.path("main.zig"),
         .target = target,
         .optimize = optimize,
     });
-    exe.root_module.addAnonymousImport("shims", .{ .root_source_file = b.path("../shims.zig") });
+    const exe = b.addExecutable(.{
+        .name = "triangle",
+        .root_module = exe_mod,
+    });
 
     const sdl_dep = b.dependency("sdl", .{
         .target = target,
@@ -21,10 +23,10 @@ pub fn build(b: *std.Build) void {
     });
     const sdl_lib = sdl_dep.artifact("SDL3");
 
-    exe.root_module.linkLibrary(sdl_lib);
+    exe_mod.linkLibrary(sdl_lib);
 
     // Generate OpenGL 4.1 bindings at build time.
-    exe.root_module.addImport("gl", @import("zigglgen").generateBindingsModule(b, .{
+    exe_mod.addImport("gl", @import("zigglgen").generateBindingsModule(b, .{
         .api = .gl,
         .version = .@"4.1",
         .profile = .core,

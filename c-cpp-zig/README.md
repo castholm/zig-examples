@@ -17,7 +17,7 @@ Leaving main.c
 
 ## Building
 
-Requires Zig `0.12.1`, `0.13.0` or `0.14.0-dev` (master).
+Requires Zig `0.14.0` or `0.15.0-dev` (master).
 
 ```sh
 # Build/run the app using the C entry point

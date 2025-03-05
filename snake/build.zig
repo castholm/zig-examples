@@ -7,11 +7,15 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const exe = b.addExecutable(.{
-        .name = "snake",
+    const exe_mod = b.createModule(.{
         .target = target,
         .optimize = optimize,
     });
+    const exe = b.addExecutable(.{
+        .name = "snake",
+        .root_module = exe_mod,
+    });
+
     exe.addCSourceFiles(.{
         .files = &.{
             "snake.c",
@@ -28,7 +32,7 @@ pub fn build(b: *std.Build) void {
     });
     const sdl_lib = sdl_dep.artifact("SDL3");
 
-    exe.root_module.linkLibrary(sdl_lib);
+    exe_mod.linkLibrary(sdl_lib);
 
     b.installArtifact(exe);
 

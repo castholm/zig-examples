@@ -2,12 +2,14 @@
 // SPDX-License-Identifier: CC0-1.0
 
 .{
-    .name = "snake",
+    .name = .snake,
     .version = "0.0.0",
+    .fingerprint = 0x516d6b9e3608c8dc,
+    .minimum_zig_version = "0.14.0",
     .dependencies = .{
         .sdl = .{
-            .url = "git+https://github.com/castholm/SDL.git#2bb5f57ea8b8c43eabe514f7bbd3361365ba2ff3",
-            .hash = "1220f653f5b656888b522bf5be06fc3062278767cfa7764e5d00eb559056d65b616f",
+            .url = "git+https://github.com/castholm/SDL.git#dbb1b96360658f5845ff6fac380c4f13d7276dc2",
+            .hash = "sdl-0.2.0+3.2.8-7uIn9FxHfQE325TK7b0qpgt10G3x1xl-3ZMOfTzxUg3C",
         },
     },
     .paths = .{

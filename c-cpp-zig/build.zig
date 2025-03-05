@@ -17,27 +17,30 @@ pub fn build(b: *std.Build) void {
         "-Werror",
     };
 
-    const exe = b.addExecutable(.{
-        .name = "greeter",
+    const exe_mod = b.createModule(.{
         .root_source_file = if (main_language == .zig) b.path("main.zig") else null,
         .target = target,
         .optimize = optimize,
+        .link_libc = true,
+        .link_libcpp = true,
     });
-    exe.linkLibC();
-    exe.linkLibCpp();
+    const exe = b.addExecutable(.{
+        .name = "greeter",
+        .root_module = exe_mod,
+    });
 
     // Make sure we can find 'greet.h'.
-    exe.root_module.addIncludePath(b.path("."));
+    exe_mod.addIncludePath(b.path("."));
 
     // Add the file containing the main entry point.
     switch (main_language) {
-        .c => exe.root_module.addCSourceFiles(.{
+        .c => exe_mod.addCSourceFiles(.{
             .files = &.{
                 "main.c",
             },
             .flags = &c_flags,
         }),
-        .cpp => exe.root_module.addCSourceFiles(.{
+        .cpp => exe_mod.addCSourceFiles(.{
             .files = &.{
                 "main.cpp",
             },
@@ -47,7 +50,7 @@ pub fn build(b: *std.Build) void {
     }
 
     // Add the greet implementations.
-    exe.root_module.addCSourceFiles(.{
+    exe_mod.addCSourceFiles(.{
         .files = &.{
             "greet.c",
             "greet.cpp",
@@ -57,7 +60,7 @@ pub fn build(b: *std.Build) void {
     // The Zig compilation model only supports compiling one root Zig source file, which when
     // compiling executables is expected to contain the main entry point. If we want to compile
     // 'greet.zig' like we would C code we need to explicitly compile it as a separate object.
-    exe.root_module.addObject(b.addObject(.{
+    exe_mod.addObject(b.addObject(.{
         .name = "greet",
         .root_source_file = b.path("greet.zig"),
         .target = target,
