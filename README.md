@@ -9,6 +9,7 @@ This is my collection of small example projects showcasing the Zig language, bui
 
 - [Breakout](#breakout)
 - [Snake](#snake)
+- [Pong](#pong)
 - [OpenGL (SDL)](#opengl-sdl)
 - [C/C++/Zig](#cczig)
 
@@ -23,6 +24,12 @@ Simple Breakout clone using SDL3 for video, audio, input, etc. How quickly can y
 [SDL's example Snake game](https://examples.libsdl.org/SDL3/demo/01-snake/), written in C, built using the Zig build system.
 
 ![Preview](snake/preview.gif)
+
+## [Pong](pong)
+
+Simple Pong clone using SDL3 for video and input.
+
+![Preview](pong/preview.gif)
 
 ## [OpenGL (SDL)](opengl-sdl)
 
