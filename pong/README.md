@@ -1,5 +1,5 @@
 <!--
-© 2024 Daniel Alves
+© 2025 Daniel Alves
 SPDX-License-Identifier: CC0-1.0
 -->
 
