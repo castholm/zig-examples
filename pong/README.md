@@ -1,6 +1,6 @@
 <!--
-© 2024 Carl Åstholm
-SPDX-License-Identifier: MIT
+© 2024 Daniel Alves
+SPDX-License-Identifier: CC0-1.0
 -->
 
 # Pong
