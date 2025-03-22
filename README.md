@@ -20,7 +20,7 @@ Simple Breakout clone using SDL3 for video, audio, input, etc. How quickly can y
 
 ## [Snake](snake)
 
-[SDL's example Snake game](https://examples.libsdl.org/SDL3/demo/01-snake/), written in C, built using the Zig build system.
+[SDL's example Snake game](https://examples.libsdl.org/SDL3/demo/01-snake/), written in C, ported the Zig build system.
 
 ![Preview](snake/preview.gif)
 
