@@ -4,7 +4,7 @@
 .{
     .name = .imgui,
     .version = "0.0.0",
-    .fingerprint = 0xdafcbd308058adbe,
+    .fingerprint = 0xb0f24415561ae71f,
     .minimum_zig_version = "0.14.0",
     .dependencies = .{
         .sdl = .{
