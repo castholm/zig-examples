@@ -53,9 +53,12 @@ pub fn build(b: *std.Build) void {
 
         const run_emcc = b.addSystemCommand(&.{"emcc"});
 
-        // Pass the full set of linked artifacts as input files.
-        for (app_lib.getCompileDependencies(false)) |compile| {
-            run_emcc.addArtifactArg(compile);
+        // Pass 'app_lib' and any static libraries it links with as input files.
+        // 'app_lib.getCompileDependencies()' will always return 'app_lib' as the first element.
+        for (app_lib.getCompileDependencies(false)) |lib| {
+            if (lib.isStaticLibrary()) {
+                run_emcc.addArtifactArg(lib);
+            }
         }
 
         if (target.result.cpu.arch == .wasm64) {
@@ -91,11 +94,10 @@ pub fn build(b: *std.Build) void {
             run_emcc.addArgs(&.{ "--closure", "1" });
         }
 
-        run_emcc.addArg("-sLEGACY_RUNTIME"); // Currently required by SDL
-
-        // Patch the default HTML shell to also display messages printed to stderr.
+        // Patch the default HTML shell.
         run_emcc.addArg("--pre-js");
         run_emcc.addFileArg(b.addWriteFiles().add("pre.js", (
+            // Display messages printed to stderr.
             \\Module['printErr'] ??= Module['print'];
             \\
         )));

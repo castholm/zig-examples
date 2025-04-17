@@ -45,7 +45,7 @@ zig build -Dtarget=x86_64-linux-gnu -Doptimize=ReleaseFast
 
 # Build for the Web (requires Emscripten)
 embuilder build sysroot
-zig build -Dtarget=wasm32-emscripten-none -Doptimize=ReleaseFast --sysroot "$(em-config CACHE)/sysroot"
+zig build -Dtarget=wasm32-emscripten -Doptimize=ReleaseFast --sysroot "$(em-config CACHE)/sysroot"
 ```
 
 ## Additional credits

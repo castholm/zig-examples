@@ -57,9 +57,12 @@ pub fn build(b: *std.Build) void {
 
         const run_emcc = b.addSystemCommand(&.{"emcc"});
 
-        // Pass the full set of linked artifacts as input files.
-        for (app_lib.getCompileDependencies(false)) |compile| {
-            run_emcc.addArtifactArg(compile);
+        // Pass 'app_lib' and any static libraries it links with as input files.
+        // 'app_lib.getCompileDependencies()' will always return 'app_lib' as the first element.
+        for (app_lib.getCompileDependencies(false)) |lib| {
+            if (lib.isStaticLibrary()) {
+                run_emcc.addArtifactArg(lib);
+            }
         }
 
         if (target.result.cpu.arch == .wasm64) {
@@ -94,8 +97,6 @@ pub fn build(b: *std.Build) void {
             // Minify JavaScript code.
             run_emcc.addArgs(&.{ "--closure", "1" });
         }
-
-        run_emcc.addArg("-sLEGACY_RUNTIME"); // Currently required by SDL
 
         run_emcc.addArg("-o");
         const app_html = run_emcc.addOutputFileArg("snake.html");
