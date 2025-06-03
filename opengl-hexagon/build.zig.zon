@@ -5,11 +5,11 @@
     .name = .opengl_hexagon,
     .version = "0.0.0",
     .fingerprint = 0xa99055f8e756dd38,
-    .minimum_zig_version = "0.14.0",
+    .minimum_zig_version = "0.14.1",
     .dependencies = .{
         .sdl = .{
-            .url = "git+https://github.com/castholm/SDL.git#f6bbe8ac5e7b901db69ba62f017596090c362d84",
-            .hash = "sdl-0.2.1+3.2.10-7uIn9PLkfQHKJO7TvSXbVa0VnySCHbLz28PDZIlKWF4Y",
+            .url = "git+https://github.com/castholm/SDL.git#3ed62e53aecd9ffb28e44b9d35b7c09a8739e823",
+            .hash = "sdl-0.2.4+3.2.16-7uIn9DPhfgH29yAIJqHLc69hNb4IW0q-AngtKCFoT92b",
         },
         .zigglgen = .{
             .url = "git+https://github.com/castholm/zigglgen.git#d5f381759825ee0bac29bc294d47aa05be4ab7b5",
