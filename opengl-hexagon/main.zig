@@ -132,7 +132,7 @@ fn sdlAppInit(appstate: ?*?*anyopaque, argv: [][*:0]u8) !c.SDL_AppResult {
     try errify(c.SDL_GL_MakeCurrent(window, gl_context));
     errdefer errify(c.SDL_GL_MakeCurrent(window, null)) catch {};
 
-    if (!gl_procs.init(c.SDL_GL_GetProcAddress)) return error.GlInitFailed;
+    if (!gl_procs.init(&c.SDL_GL_GetProcAddress)) return error.GlInitFailed;
 
     gl.makeProcTableCurrent(&gl_procs);
     errdefer gl.makeProcTableCurrent(null);

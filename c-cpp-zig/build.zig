@@ -52,9 +52,11 @@ pub fn build(b: *std.Build) void {
     // 'greet.zig' like we would C code, we need to explicitly compile it into a separate object.
     app_mod.addObject(b.addObject(.{
         .name = "greet",
-        .root_source_file = b.path("greet.zig"),
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("greet.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
     }));
 
     b.installArtifact(app);

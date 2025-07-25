@@ -10,6 +10,8 @@ const c = @cImport({
     @cInclude("SDL3/SDL_main.h");
 });
 
+const post_writergate = @hasDecl(std, "Io"); // TODO: Remove after 0.15 (also audit std.Io.Writer code)
+
 pub const std_options: std.Options = .{ .log_level = .debug };
 
 const sdl_log = std.log.scoped(.sdl);
@@ -110,12 +112,12 @@ fn sdlAppInit(appstate: ?*?*anyopaque, argv: [][*:0]u8) !c.SDL_AppResult {
     try errify(c.SDL_Init(c.SDL_INIT_VIDEO | c.SDL_INIT_AUDIO | c.SDL_INIT_GAMEPAD));
     // We don't need to call 'SDL_Quit()' when using main callbacks.
 
-    sdl_log.debug("SDL video drivers: {}", .{fmtSdlDrivers(
+    sdl_log.debug("SDL video drivers: {f}", .{fmtSdlDrivers(
         c.SDL_GetCurrentVideoDriver().?,
         c.SDL_GetNumVideoDrivers(),
         c.SDL_GetVideoDriver,
     )});
-    sdl_log.debug("SDL audio drivers: {}", .{fmtSdlDrivers(
+    sdl_log.debug("SDL audio drivers: {f}", .{fmtSdlDrivers(
         c.SDL_GetCurrentAudioDriver().?,
         c.SDL_GetNumAudioDrivers(),
         c.SDL_GetAudioDriver,
@@ -127,7 +129,7 @@ fn sdlAppInit(appstate: ?*?*anyopaque, argv: [][*:0]u8) !c.SDL_AppResult {
     errdefer c.SDL_DestroyWindow(window);
     errdefer c.SDL_DestroyRenderer(renderer);
 
-    sdl_log.debug("SDL render drivers: {}", .{fmtSdlDrivers(
+    sdl_log.debug("SDL render drivers: {f}", .{fmtSdlDrivers(
         c.SDL_GetRendererName(renderer).?,
         c.SDL_GetNumRenderDrivers(),
         c.SDL_GetRenderDriver,
@@ -882,11 +884,13 @@ fn saveBestScore() !void {
     app_log.debug("saved best score: {}", .{best_score});
 }
 
-fn fmtSdlDrivers(
+const fmtSdlDrivers = if (post_writergate) fmtSdlDriversPostWritergate else fmtSdlDriversPreWritergate;
+
+fn fmtSdlDriversPostWritergate(
     current_driver: [*:0]const u8,
     num_drivers: c_int,
-    getDriver: *const fn (c_int) callconv(.C) ?[*:0]const u8,
-) std.fmt.Formatter(formatSdlDrivers) {
+    getDriver: *const fn (c_int) callconv(.c) ?[*:0]const u8,
+) std.fmt.Alt(@typeInfo(@TypeOf(formatSdlDriversPostWritergate)).@"fn".params[0].type.?, formatSdlDriversPostWritergate) {
     return .{ .data = .{
         .current_driver = current_driver,
         .num_drivers = num_drivers,
@@ -894,11 +898,44 @@ fn fmtSdlDrivers(
     } };
 }
 
-fn formatSdlDrivers(
+fn formatSdlDriversPostWritergate(
     context: struct {
         current_driver: [*:0]const u8,
         num_drivers: c_int,
-        getDriver: *const fn (c_int) callconv(.C) ?[*:0]const u8,
+        getDriver: *const fn (c_int) callconv(.c) ?[*:0]const u8,
+    },
+    writer: *std.Io.Writer,
+) !void {
+    var i: c_int = 0;
+    while (i < context.num_drivers) : (i += 1) {
+        if (i != 0) {
+            try writer.writeAll(", ");
+        }
+        const driver = context.getDriver(i).?;
+        try writer.writeAll(std.mem.span(driver));
+        if (std.mem.orderZ(u8, context.current_driver, driver) == .eq) {
+            try writer.writeAll(" (current)");
+        }
+    }
+}
+
+fn fmtSdlDriversPreWritergate(
+    current_driver: [*:0]const u8,
+    num_drivers: c_int,
+    getDriver: *const fn (c_int) callconv(.c) ?[*:0]const u8,
+) std.fmt.Formatter(formatSdlDriversPreWritergate) {
+    return .{ .data = .{
+        .current_driver = current_driver,
+        .num_drivers = num_drivers,
+        .getDriver = getDriver,
+    } };
+}
+
+fn formatSdlDriversPreWritergate(
+    context: struct {
+        current_driver: [*:0]const u8,
+        num_drivers: c_int,
+        getDriver: *const fn (c_int) callconv(.c) ?[*:0]const u8,
     },
     comptime _: []const u8,
     _: std.fmt.FormatOptions,

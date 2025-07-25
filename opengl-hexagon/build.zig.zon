@@ -8,12 +8,12 @@
     .minimum_zig_version = "0.14.1",
     .dependencies = .{
         .sdl = .{
-            .url = "git+https://github.com/castholm/SDL.git#3ed62e53aecd9ffb28e44b9d35b7c09a8739e823",
-            .hash = "sdl-0.2.4+3.2.16-7uIn9DPhfgH29yAIJqHLc69hNb4IW0q-AngtKCFoT92b",
+            .url = "git+https://github.com/castholm/SDL.git#5c55c894039a15a16bb7c89b2d6438e158e86ef1",
+            .hash = "sdl-0.2.5+3.2.18-7uIn9FwZfwHKOwSubcg5_CiW4fXag5IIsiV_jnLdkpDM",
         },
         .zigglgen = .{
-            .url = "git+https://github.com/castholm/zigglgen.git#d5f381759825ee0bac29bc294d47aa05be4ab7b5",
-            .hash = "zigglgen-0.4.0-bmyqLX_gLQDFXilQ5VQ9fJeOHKU1RFrggOzRqTGBX79W",
+            .url = "git+https://github.com/castholm/zigglgen.git#0b8261eb00f098ea65e2a1b0a42798a2d1410ccb",
+            .hash = "zigglgen-0.4.0-bmyqLS3sLQC1iF0iqkTqw_bEDhSNK8TQoL_c16DWNbkT",
         },
     },
     .paths = .{
