@@ -81,7 +81,8 @@ var timekeeper: Timekeeper = undefined;
 
 var paddle: Paddle = undefined;
 var ball: Ball = undefined;
-var bricks: std.BoundedArray(Brick, 100) = undefined;
+var bricks_buf: [100]Brick = undefined;
+var bricks: std.ArrayListUnmanaged(Brick) = undefined;
 
 var score: u32 = undefined;
 var score_color: [3]u8 = undefined;
@@ -220,7 +221,7 @@ fn resetGame() !void {
         .src_rect = &sprites.ball,
     };
 
-    bricks = .{};
+    bricks = .initBuffer(&bricks_buf);
     {
         const x = window_w * 0.5;
         const h = sprites.brick_1x1_gray.h;
@@ -236,7 +237,7 @@ fn resetGame() !void {
             const y = gap + (h + gap) * (@as(f32, @floatFromInt(row)) + 1);
             var large = row % 2 == 0;
             var src_rect = src_rects[@intFromBool(large)];
-            try bricks.append(.{
+            bricks.appendAssumeCapacity(.{ // TODO: Replace with appendBounded after 0.15
                 .box = .{
                     .x = x - src_rect.w * 0.5,
                     .y = y,
@@ -253,7 +254,7 @@ fn resetGame() !void {
                 src_rect = src_rects[@intFromBool(large)];
                 rel_x += src_rect.w * 0.5;
                 for ([_]f32{ -1, 1 }) |sign| {
-                    try bricks.append(.{
+                    bricks.appendAssumeCapacity(.{ // TODO: Replace with appendBounded after 0.15
                         .box = .{
                             .x = x - src_rect.w * 0.5 + rel_x * sign,
                             .y = y,
@@ -433,7 +434,7 @@ fn sdlAppIterate(appstate: ?*anyopaque) !c.SDL_AppResult {
                     .w = @max(ball.box.w, ball.box.w + remaining_vel_x),
                     .h = @max(ball.box.h, ball.box.h + remaining_vel_y),
                 };
-                for (bricks.slice(), 0..) |brick, i| {
+                for (bricks.items, 0..) |brick, i| {
                     if (broad.intersects(brick.box)) {
                         if (ball.box.sweepTest(remaining_vel_x, remaining_vel_y, brick.box, 0, 0)) |collision| {
                             if (t - collision.t >= 0.001) {
@@ -483,7 +484,7 @@ fn sdlAppIterate(appstate: ?*anyopaque) !c.SDL_AppResult {
                         sounds_to_play.insert(.hit_paddle);
                     },
                     .brick => {
-                        if (bricks.len == 0) {
+                        if (bricks.items.len == 0) {
                             won = true;
                             sounds_to_play.insert(.win);
                         } else {
@@ -497,7 +498,7 @@ fn sdlAppIterate(appstate: ?*anyopaque) !c.SDL_AppResult {
 
         if (previous_ball_y < window_h and ball.box.y >= window_h) {
             // The ball fell below the paddle.
-            if (bricks.len != 0) {
+            if (bricks.items.len != 0) {
                 sounds_to_play.insert(.lose);
             }
         }
@@ -505,13 +506,13 @@ fn sdlAppIterate(appstate: ?*anyopaque) !c.SDL_AppResult {
         // Update score.
         if (ball.launched) {
             if (ball.box.y < window_h) {
-                if (bricks.len != 0) {
+                if (bricks.items.len != 0) {
                     score +|= 1;
                 } else {
                     best_score = @min(score, best_score);
                 }
             }
-            if (score <= best_score and bricks.len == 0) {
+            if (score <= best_score and bricks.items.len == 0) {
                 score_color = .{ 0x52, 0xcc, 0x73 };
             } else if (ball.box.y >= window_h or score > best_score) {
                 score_color = .{ 0xcc, 0x5c, 0x52 };
@@ -562,7 +563,7 @@ fn sdlAppIterate(appstate: ?*anyopaque) !c.SDL_AppResult {
 
         try errify(c.SDL_RenderClear(renderer));
 
-        for (bricks.slice()) |brick| try renderObject(renderer, sprites_texture, brick.src_rect, brick.box);
+        for (bricks.items) |brick| try renderObject(renderer, sprites_texture, brick.src_rect, brick.box);
         try renderObject(renderer, sprites_texture, ball.src_rect, ball.box);
         try renderObject(renderer, sprites_texture, paddle.src_rect, paddle.box);
 
