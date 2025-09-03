@@ -7,14 +7,18 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    var emscripten_system_include_path: ?std.Build.LazyPath = null;
+    var system_include_path: ?std.Build.LazyPath = null;
+    var lto: ?std.zig.LtoMode = null;
     switch (target.result.os.tag) {
         .emscripten => {
             if (b.sysroot) |sysroot| {
-                emscripten_system_include_path = .{ .cwd_relative = b.pathJoin(&.{ sysroot, "include" }) };
+                system_include_path = .{ .cwd_relative = b.pathJoin(&.{ sysroot, "include" }) };
             } else {
                 std.log.err("'--sysroot' is required when building for Emscripten", .{});
                 std.process.exit(1);
+            }
+            if (optimize != .Debug) {
+                lto = .full;
             }
         },
         else => {},
@@ -26,7 +30,11 @@ pub fn build(b: *std.Build) void {
         .link_libc = true,
     });
 
-    if (emscripten_system_include_path) |path| {
+    if (target.result.os.tag == .windows and target.result.abi == .msvc) {
+        // Work around a problematic definition in wchar.h in Windows SDK version 10.0.26100.0
+        app_mod.addCMacro("_Avx2WmemEnabledWeakValue", "_Avx2WmemEnabled");
+    }
+    if (system_include_path) |path| {
         app_mod.addSystemIncludePath(path);
     }
 
@@ -38,7 +46,7 @@ pub fn build(b: *std.Build) void {
     const sdl_dep = b.dependency("sdl", .{
         .target = target,
         .optimize = optimize,
-        .lto = optimize != .Debug,
+        .lto = lto,
     });
     const sdl_lib = sdl_dep.artifact("SDL3");
     app_mod.linkLibrary(sdl_lib);
@@ -53,7 +61,7 @@ pub fn build(b: *std.Build) void {
             .name = "snake",
             .root_module = app_mod,
         });
-        app_lib.want_lto = optimize != .Debug;
+        app_lib.lto = lto;
 
         const run_emcc = b.addSystemCommand(&.{"emcc"});
 
@@ -98,6 +106,14 @@ pub fn build(b: *std.Build) void {
             run_emcc.addArgs(&.{ "--closure", "1" });
         }
 
+        // Patch the default HTML shell.
+        run_emcc.addArg("--pre-js");
+        run_emcc.addFileArg(b.addWriteFiles().add("pre.js", (
+            // Display messages printed to stderr.
+            \\Module['printErr'] ??= Module['print'];
+            \\
+        )));
+
         run_emcc.addArg("-o");
         const app_html = run_emcc.addOutputFileArg("snake.html");
 
@@ -120,7 +136,7 @@ pub fn build(b: *std.Build) void {
             .name = "snake",
             .root_module = app_mod,
         });
-        app_exe.want_lto = optimize != .Debug;
+        app_exe.lto = lto;
 
         b.installArtifact(app_exe);
 

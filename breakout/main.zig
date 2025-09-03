@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 const std = @import("std");
+const builtin = @import("builtin");
 const c = @cImport({
     @cDefine("SDL_DISABLE_OLD_NAMES", {});
     @cInclude("SDL3/SDL.h");
@@ -10,9 +11,13 @@ const c = @cImport({
     @cInclude("SDL3/SDL_main.h");
 });
 
-const post_writergate = @hasDecl(std, "Io"); // TODO: Remove after 0.15 (also audit std.Io.Writer code)
-
 pub const std_options: std.Options = .{ .log_level = .debug };
+
+const target_triple: [:0]const u8 = x: {
+    var buf: [256]u8 = undefined;
+    var fba: std.heap.FixedBufferAllocator = .init(&buf);
+    break :x (builtin.target.zigTriple(fba.allocator()) catch unreachable) ++ "";
+};
 
 const sdl_log = std.log.scoped(.sdl);
 const app_log = std.log.scoped(.app);
@@ -91,6 +96,9 @@ fn sdlAppInit(appstate: ?*?*anyopaque, argv: [][*:0]u8) !c.SDL_AppResult {
     _ = appstate;
     _ = argv;
 
+    std.log.debug("{s} {s}", .{ target_triple, @tagName(builtin.mode) });
+    const platform: [*:0]const u8 = c.SDL_GetPlatform();
+    sdl_log.debug("SDL platform: {s}", .{platform});
     sdl_log.debug("SDL build time version: {d}.{d}.{d}", .{
         c.SDL_MAJOR_VERSION,
         c.SDL_MINOR_VERSION,
@@ -237,7 +245,7 @@ fn resetGame() !void {
             const y = gap + (h + gap) * (@as(f32, @floatFromInt(row)) + 1);
             var large = row % 2 == 0;
             var src_rect = src_rects[@intFromBool(large)];
-            bricks.appendAssumeCapacity(.{ // TODO: Replace with appendBounded after 0.15
+            try bricks.appendBounded(.{
                 .box = .{
                     .x = x - src_rect.w * 0.5,
                     .y = y,
@@ -254,7 +262,7 @@ fn resetGame() !void {
                 src_rect = src_rects[@intFromBool(large)];
                 rel_x += src_rect.w * 0.5;
                 for ([_]f32{ -1, 1 }) |sign| {
-                    bricks.appendAssumeCapacity(.{ // TODO: Replace with appendBounded after 0.15
+                    try bricks.appendBounded(.{
                         .box = .{
                             .x = x - src_rect.w * 0.5 + rel_x * sign,
                             .y = y,
@@ -544,7 +552,7 @@ fn sdlAppIterate(appstate: ?*anyopaque) !c.SDL_AppResult {
             } else {
                 break :iterate_sounds;
             };
-            const frame_size: usize = c.SDL_AUDIO_BYTESIZE(sounds_spec.format) * @as(c_uint, @intCast(sounds_spec.channels));
+            const frame_size = @as(usize, @intCast(c.SDL_AUDIO_BYTESIZE(sounds_spec.format))) * @as(usize, @intCast(sounds_spec.channels));
             const start: usize, const end: usize = switch (sound) {
                 .hit_wall => sounds.hit_wall,
                 .hit_paddle => sounds.hit_paddle,
@@ -885,75 +893,37 @@ fn saveBestScore() !void {
     app_log.debug("saved best score: {}", .{best_score});
 }
 
-const fmtSdlDrivers = if (post_writergate) fmtSdlDriversPostWritergate else fmtSdlDriversPreWritergate;
-
-fn fmtSdlDriversPostWritergate(
+fn fmtSdlDrivers(
     current_driver: [*:0]const u8,
     num_drivers: c_int,
     getDriver: *const fn (c_int) callconv(.c) ?[*:0]const u8,
-) std.fmt.Alt(@typeInfo(@TypeOf(formatSdlDriversPostWritergate)).@"fn".params[0].type.?, formatSdlDriversPostWritergate) {
-    return .{ .data = .{
+) FormatSdlDrivers {
+    return .{
         .current_driver = current_driver,
         .num_drivers = num_drivers,
         .getDriver = getDriver,
-    } };
+    };
 }
 
-fn formatSdlDriversPostWritergate(
-    context: struct {
-        current_driver: [*:0]const u8,
-        num_drivers: c_int,
-        getDriver: *const fn (c_int) callconv(.c) ?[*:0]const u8,
-    },
-    writer: *std.Io.Writer,
-) !void {
-    var i: c_int = 0;
-    while (i < context.num_drivers) : (i += 1) {
-        if (i != 0) {
-            try writer.writeAll(", ");
-        }
-        const driver = context.getDriver(i).?;
-        try writer.writeAll(std.mem.span(driver));
-        if (std.mem.orderZ(u8, context.current_driver, driver) == .eq) {
-            try writer.writeAll(" (current)");
-        }
-    }
-}
-
-fn fmtSdlDriversPreWritergate(
+const FormatSdlDrivers = struct {
     current_driver: [*:0]const u8,
     num_drivers: c_int,
     getDriver: *const fn (c_int) callconv(.c) ?[*:0]const u8,
-) std.fmt.Formatter(formatSdlDriversPreWritergate) {
-    return .{ .data = .{
-        .current_driver = current_driver,
-        .num_drivers = num_drivers,
-        .getDriver = getDriver,
-    } };
-}
 
-fn formatSdlDriversPreWritergate(
-    context: struct {
-        current_driver: [*:0]const u8,
-        num_drivers: c_int,
-        getDriver: *const fn (c_int) callconv(.c) ?[*:0]const u8,
-    },
-    comptime _: []const u8,
-    _: std.fmt.FormatOptions,
-    writer: anytype,
-) !void {
-    var i: c_int = 0;
-    while (i < context.num_drivers) : (i += 1) {
-        if (i != 0) {
-            try writer.writeAll(", ");
-        }
-        const driver = context.getDriver(i).?;
-        try writer.writeAll(std.mem.span(driver));
-        if (std.mem.orderZ(u8, context.current_driver, driver) == .eq) {
-            try writer.writeAll(" (current)");
+    pub fn format(context: FormatSdlDrivers, writer: *std.Io.Writer) std.io.Writer.Error!void {
+        var i: c_int = 0;
+        while (i < context.num_drivers) : (i += 1) {
+            if (i != 0) {
+                try writer.writeAll(", ");
+            }
+            const driver = context.getDriver(i).?;
+            try writer.writeAll(std.mem.span(driver));
+            if (std.mem.orderZ(u8, context.current_driver, driver) == .eq) {
+                try writer.writeAll(" (current)");
+            }
         }
     }
-}
+};
 
 /// Converts the return value of an SDL function to an error union.
 inline fn errify(value: anytype) error{SdlError}!switch (@typeInfo(@TypeOf(value))) {

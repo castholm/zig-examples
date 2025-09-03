@@ -5,7 +5,7 @@
     .name = .c_cpp_zig,
     .version = "0.0.0",
     .fingerprint = 0xeaae25b468914a83,
-    .minimum_zig_version = "0.14.1",
+    .minimum_zig_version = "0.15.1",
     .dependencies = .{},
     .paths = .{
         "invalid", // Not intended for consumption as a package

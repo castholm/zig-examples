@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: CC0-1.0
 
 const std = @import("std");
+const builtin = @import("builtin");
 const gl = @import("gl");
 const c = @cImport({
     @cDefine("SDL_DISABLE_OLD_NAMES", {});
@@ -12,6 +13,12 @@ const c = @cImport({
 });
 
 pub const std_options: std.Options = .{ .log_level = .debug };
+
+const target_triple: [:0]const u8 = x: {
+    var buf: [256]u8 = undefined;
+    var fba: std.heap.FixedBufferAllocator = .init(&buf);
+    break :x (builtin.target.zigTriple(fba.allocator()) catch unreachable) ++ "";
+};
 
 const sdl_log = std.log.scoped(.sdl);
 const gl_log = std.log.scoped(.gl);
@@ -82,6 +89,9 @@ fn sdlAppInit(appstate: ?*?*anyopaque, argv: [][*:0]u8) !c.SDL_AppResult {
     _ = appstate;
     _ = argv;
 
+    std.log.debug("{s} {s}", .{ target_triple, @tagName(builtin.mode) });
+    const platform: [*:0]const u8 = c.SDL_GetPlatform();
+    sdl_log.debug("SDL platform: {s}", .{platform});
     sdl_log.debug("SDL build time version: {d}.{d}.{d}", .{
         c.SDL_MAJOR_VERSION,
         c.SDL_MINOR_VERSION,
@@ -217,7 +227,7 @@ fn sdlAppInit(appstate: ?*?*anyopaque, argv: [][*:0]u8) !c.SDL_AppResult {
             &.{ shader_version.len, vertex_shader_source.len },
         );
         gl.CompileShader(vertex_shader);
-        gl.GetShaderiv(vertex_shader, gl.COMPILE_STATUS, &success);
+        gl.GetShaderiv(vertex_shader, gl.COMPILE_STATUS, (&success)[0..1]);
         if (success == gl.FALSE) {
             gl.GetShaderInfoLog(vertex_shader, info_log_buf.len, null, &info_log_buf);
             gl_log.err("{s}", .{std.mem.sliceTo(&info_log_buf, 0)});
@@ -235,7 +245,7 @@ fn sdlAppInit(appstate: ?*?*anyopaque, argv: [][*:0]u8) !c.SDL_AppResult {
             &.{ shader_version.len, fragment_shader_source.len },
         );
         gl.CompileShader(fragment_shader);
-        gl.GetShaderiv(fragment_shader, gl.COMPILE_STATUS, &success);
+        gl.GetShaderiv(fragment_shader, gl.COMPILE_STATUS, (&success)[0..1]);
         if (success == gl.FALSE) {
             gl.GetShaderInfoLog(fragment_shader, info_log_buf.len, null, &info_log_buf);
             gl_log.err("{s}", .{std.mem.sliceTo(&info_log_buf, 0)});
@@ -245,7 +255,7 @@ fn sdlAppInit(appstate: ?*?*anyopaque, argv: [][*:0]u8) !c.SDL_AppResult {
         gl.AttachShader(program, vertex_shader);
         gl.AttachShader(program, fragment_shader);
         gl.LinkProgram(program);
-        gl.GetProgramiv(program, gl.LINK_STATUS, &success);
+        gl.GetProgramiv(program, gl.LINK_STATUS, (&success)[0..1]);
         if (success == gl.FALSE) {
             gl.GetProgramInfoLog(program, info_log_buf.len, null, &info_log_buf);
             gl_log.err("{s}", .{std.mem.sliceTo(&info_log_buf, 0)});
