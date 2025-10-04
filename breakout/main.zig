@@ -910,7 +910,7 @@ const FormatSdlDrivers = struct {
     num_drivers: c_int,
     getDriver: *const fn (c_int) callconv(.c) ?[*:0]const u8,
 
-    pub fn format(context: FormatSdlDrivers, writer: *std.Io.Writer) std.io.Writer.Error!void {
+    pub fn format(context: FormatSdlDrivers, writer: *std.Io.Writer) std.Io.Writer.Error!void {
         var i: c_int = 0;
         while (i < context.num_drivers) : (i += 1) {
             if (i != 0) {
