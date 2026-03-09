@@ -12,7 +12,7 @@ SPDX-License-Identifier = "MIT"
 [[annotations]]
 path = [
     "breakout/sounds.wav",
-    "breakout/sprites.bmp"
+    "breakout/sprites.png"
 ]
 SPDX-FileCopyrightText = "NONE" # Kenney <www.kenney.nl>
 SPDX-License-Identifier = "CC0-1.0"

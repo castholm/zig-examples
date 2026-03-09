@@ -5,11 +5,11 @@
     .name = .snake,
     .version = "0.0.0",
     .fingerprint = 0x516d6b9e3608c8dc,
-    .minimum_zig_version = "0.15.1",
+    .minimum_zig_version = "0.15.2",
     .dependencies = .{
         .sdl = .{
-            .url = "git+https://github.com/castholm/SDL.git#1d4b8dcc03bd216712b55318b4ad2402b5511490",
-            .hash = "sdl-0.3.1+3.2.24-7uIn9L9AfwFQf90JcTh3Slw__ZA8SEomk6fQI9F8ItY0",
+            .url = "git+https://github.com/castholm/SDL.git#073b0207d51e00ec4fb989c5a685aa8ad23bbe83",
+            .hash = "sdl-0.4.1+3.4.2-SDL--hF-pAEsbMtCvJAr9CwYI94eOItCgmnDb0ZXeKPJ",
         },
     },
     .paths = .{

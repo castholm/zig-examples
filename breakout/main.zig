@@ -4,6 +4,13 @@
 const std = @import("std");
 const builtin = @import("builtin");
 const c = @cImport({
+    if (builtin.target.os.tag == .windows and builtin.target.abi == .msvc) { // 0.16-dev regression workaround
+        @cDefine("SIZE_MAX", "((size_t)-1)");
+    }
+    if (builtin.target.os.tag == .emscripten) { // 0.16-dev regression workaround
+        @cDefine("wint_t", "int");
+        @cDefine("__DEFINED_wint_t", {});
+    }
     @cDefine("SDL_DISABLE_OLD_NAMES", {});
     @cInclude("SDL3/SDL.h");
     @cInclude("SDL3/SDL_revision.h");
@@ -23,7 +30,7 @@ const sdl_log = std.log.scoped(.sdl);
 const app_log = std.log.scoped(.app);
 
 const sprites = struct {
-    const bmp = @embedFile("sprites.bmp");
+    const png = @embedFile("sprites.png");
 
     // zig fmt: off
     const brick_2x1_purple: c.SDL_FRect = .{ .x =   1, .y =  1, .w = 64, .h = 32 };
@@ -145,8 +152,8 @@ fn sdlAppInit(appstate: ?*?*anyopaque, argv: [][*:0]u8) !c.SDL_AppResult {
     )});
 
     {
-        const stream: *c.SDL_IOStream = try errify(c.SDL_IOFromConstMem(sprites.bmp, sprites.bmp.len));
-        const surface: *c.SDL_Surface = try errify(c.SDL_LoadBMP_IO(stream, true));
+        const stream: *c.SDL_IOStream = try errify(c.SDL_IOFromConstMem(sprites.png, sprites.png.len));
+        const surface: *c.SDL_Surface = try errify(c.SDL_LoadPNG_IO(stream, true));
         defer c.SDL_DestroySurface(surface);
 
         sprites_texture = try errify(c.SDL_CreateTextureFromSurface(renderer, surface));

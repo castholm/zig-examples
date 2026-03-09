@@ -5,6 +5,13 @@ const std = @import("std");
 const builtin = @import("builtin");
 const gl = @import("gl");
 const c = @cImport({
+    if (builtin.target.os.tag == .windows and builtin.target.abi == .msvc) { // 0.16-dev regression workaround
+        @cDefine("SIZE_MAX", "((size_t)-1)");
+    }
+    if (builtin.target.os.tag == .emscripten) { // 0.16-dev regression workaround
+        @cDefine("wint_t", "int");
+        @cDefine("__DEFINED_wint_t", {});
+    }
     @cDefine("SDL_DISABLE_OLD_NAMES", {});
     @cInclude("SDL3/SDL.h");
     @cInclude("SDL3/SDL_revision.h");
@@ -83,7 +90,7 @@ var vbo: c_uint = undefined;
 /// Index Buffer Object (IBO). Maps indices to vertices, to enable reusing vertex data.
 var ibo: c_uint = undefined;
 
-var uptime: std.time.Timer = undefined;
+var uptime_origin: u64 = undefined;
 
 fn sdlAppInit(appstate: ?*?*anyopaque, argv: [][*:0]u8) !c.SDL_AppResult {
     _ = appstate;
@@ -329,7 +336,7 @@ fn sdlAppInit(appstate: ?*?*anyopaque, argv: [][*:0]u8) !c.SDL_AppResult {
         );
     }
 
-    uptime = try .start();
+    uptime_origin = c.SDL_GetTicksNS();
 
     fully_initialized = true;
     errdefer comptime unreachable;
@@ -356,7 +363,8 @@ fn sdlAppIterate(appstate: ?*anyopaque) !c.SDL_AppResult {
         gl.Uniform2f(framebuffer_size_uniform, @floatFromInt(fb_width), @floatFromInt(fb_height));
 
         // Rotate the hexagon clockwise at a rate of one complete revolution per minute.
-        const seconds = @as(f32, @floatFromInt(uptime.read())) / std.time.ns_per_s;
+        const uptime = c.SDL_GetTicksNS() - uptime_origin;
+        const seconds = @as(f32, @floatFromInt(uptime)) / std.time.ns_per_s;
         gl.Uniform1f(angle_uniform, seconds / 60 * -std.math.tau);
 
         gl.BindVertexArray(vao);
