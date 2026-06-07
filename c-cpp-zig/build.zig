@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: CC0-1.0
 
 const std = @import("std");
+const translate_c = @import("translate_c");
 
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
@@ -39,7 +40,18 @@ pub fn build(b: *std.Build) void {
             .file = b.path("main.cpp"),
             .flags = &c_flags,
         }),
-        .zig => {}, // Already handled by 'b.createModule()'
+        .zig => {
+            // `main.zig` was already added by the 'b.createModule()' call above.
+            // However, `main.zig` has a dependency on `greet.h`,
+            // which we need to translate from C to Zig.
+            const translate_c_dep = b.dependency("translate_c", .{});
+            const translator: translate_c.Translator = .init(translate_c_dep, .{
+                .c_source_file = b.path("greet.h"),
+                .target = target,
+                .optimize = optimize,
+            });
+            app_mod.addImport("c", translator.mod);
+        },
     }
 
     // Add the greeter implementations.
@@ -62,7 +74,7 @@ pub fn build(b: *std.Build) void {
     b.installArtifact(app);
 
     const run_app = b.addRunArtifact(app);
-    if (b.args) |args| run_app.addArgs(args);
+    run_app.addPassthruArgs();
     run_app.step.dependOn(b.getInstallStep());
 
     const run = b.step("run", "Run the app");

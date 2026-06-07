@@ -5,8 +5,13 @@
     .name = .c_cpp_zig,
     .version = "0.0.0",
     .fingerprint = 0xeaae25b468914a83,
-    .minimum_zig_version = "0.15.2",
-    .dependencies = .{},
+    .minimum_zig_version = "0.17.0-dev",
+    .dependencies = .{
+        .translate_c = .{
+            .url = "git+https://codeberg.org/ziglang/translate-c#c26bb176f3d63c8f3f57ac4e82d78f9124506b0d",
+            .hash = "translate_c-0.0.0-Q_BUWuEVBwCbZUsNorTQ6-d3nYx8KDgHHWtVWBzgzyB5",
+        },
+    },
     .paths = .{
         "invalid", // Not intended for consumption as a package
     },

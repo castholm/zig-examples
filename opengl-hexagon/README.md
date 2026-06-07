@@ -13,7 +13,7 @@ Uses [castholm/SDL](https://github.com/castholm/SDL) to build SDL3 from source a
 
 ## Building
 
-Requires Zig 0.15.2 or 0.16.0-dev (master).
+Requires Zig 0.17.0-dev (master).
 
 ```sh
 # Run the game
@@ -25,7 +25,8 @@ zig build -Dtarget=x86_64-windows-gnu -Doptimize=ReleaseFast
 # Cross-compile for Linux
 zig build -Dtarget=x86_64-linux-gnu -Doptimize=ReleaseFast
 
-# Build for the Web (requires Emscripten)
+# Build for the Web and serve locally (requires Emscripten)
 embuilder build sysroot
-zig build -Dtarget=wasm32-emscripten -Doptimize=ReleaseFast --sysroot "$(em-config CACHE)/sysroot"
+zig build -Dtarget=wasm32-emscripten -Doptimize=ReleaseFast "-Dsystem_include_path=$(em-config CACHE)/sysroot/include"
+emrun zig-out/www/opengl_hexagon.html
 ```

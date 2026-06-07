@@ -19,13 +19,6 @@ pub fn build(b: *std.Build) void {
         .root_module = app_mod,
     });
 
-    if (target.result.os.tag == .windows and target.result.abi == .msvc and @import("builtin").zig_version.major <= 15) { // TODO: Remove after 0.16
-        // Fix "duplicate symbol" errors by redefining a problematic weak symbol definition in
-        // wchar.h which was introduced in Windows SDK version 10.0.26100.0 and which LLVM 20
-        // doesn't understand how to handle.
-        app_mod.addCMacro("_Avx2WmemEnabledWeakValue", "_Avx2WmemEnabled");
-    }
-
     app_mod.addCSourceFile(.{
         .file = b.path("snake.c"),
         .flags = &.{ "-Wall", "-Werror" },
@@ -41,7 +34,7 @@ pub fn build(b: *std.Build) void {
     b.installArtifact(app_exe);
 
     const run_app = b.addRunArtifact(app_exe);
-    if (b.args) |args| run_app.addArgs(args);
+    run_app.addPassthruArgs();
     run_app.step.dependOn(b.getInstallStep());
 
     const run = b.step("run", "Run the app");
@@ -49,12 +42,14 @@ pub fn build(b: *std.Build) void {
 }
 
 fn buildWeb(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.builtin.OptimizeMode) void {
-    const sysroot = b.sysroot orelse {
-        std.log.err("'--sysroot' is required when building for Emscripten", .{});
+    const system_include_path = b.option(
+        std.Build.LazyPath,
+        "system_include_path",
+        "System header search path for cross-compiling",
+    ) orelse {
+        std.log.err("'-Dsystem_include_path' is required when building SDL for Emscripten", .{});
         std.process.exit(1);
     };
-    b.sysroot = null; // 0.16-dev regression workaround
-    const sysroot_include_path: std.Build.LazyPath = .{ .cwd_relative = b.pathJoin(&.{ sysroot, "include" }) };
     const lto: ?std.zig.LtoMode = if (optimize != .Debug) .full else null;
 
     const app_mod = b.createModule(.{
@@ -69,30 +64,29 @@ fn buildWeb(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.built
     });
     app_lib.lto = lto;
 
-    app_mod.addSystemIncludePath(sysroot_include_path);
+    app_mod.addSystemIncludePath(system_include_path);
 
     app_mod.addCSourceFile(.{
         .file = b.path("snake.c"),
         .flags = &.{ "-Wall", "-Werror" },
     });
 
-    b.sysroot = sysroot; // 0.16-dev regression workaround
     const sdl_dep = b.dependency("sdl", .{
         .target = target,
         .optimize = optimize,
+        .system_include_path = system_include_path,
         .lto = lto,
     });
-    b.sysroot = null; // 0.16-dev regression workaround
     const sdl_lib = sdl_dep.artifact("SDL3");
     app_mod.linkLibrary(sdl_lib);
 
     const run_emcc = b.addSystemCommand(&.{"emcc"});
 
-    // Pass 'app_lib' and any static libraries it links with as input files.
+    // Pass 'app_lib' and any static libraries or object files it links with as input files.
     // 'app_lib.getCompileDependencies()' will always return 'app_lib' as the first element.
-    for (app_lib.getCompileDependencies(false)) |lib| {
-        if (lib.isStaticLibrary()) {
-            run_emcc.addArtifactArg(lib);
+    for (app_lib.getCompileDependencies(false)) |artifact| {
+        if (artifact.isStaticLibrary() or artifact.kind == .obj) {
+            run_emcc.addArtifactArg(artifact);
         }
     }
 
@@ -134,6 +128,8 @@ fn buildWeb(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.built
     run_emcc.addFileArg(b.addWriteFiles().add("pre.js", (
         // Display messages printed to stderr.
         \\Module['printErr'] ??= Module['print'];
+        // Disable ANSI escape sequences.
+        \\Module['preRun'] = () => ENV['NO_COLOR'] = '1';
     )));
 
     run_emcc.addArg("-o");
@@ -144,12 +140,4 @@ fn buildWeb(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.built
         .install_dir = .{ .custom = "www" },
         .install_subdir = "",
     }).step);
-
-    const run_emrun = b.addSystemCommand(&.{"emrun"});
-    run_emrun.addArg(b.pathJoin(&.{ b.install_path, "www", "snake.html" }));
-    if (b.args) |args| run_emrun.addArgs(args);
-    run_emrun.step.dependOn(b.getInstallStep());
-
-    const run = b.step("run", "Run the app");
-    run.dependOn(&run_emrun.step);
 }

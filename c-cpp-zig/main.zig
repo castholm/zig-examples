@@ -2,9 +2,7 @@
 // SPDX-License-Identifier: CC0-1.0
 
 const std = @import("std");
-const c = @cImport({
-    @cInclude("greet.h");
-});
+const c = @import("c");
 
 pub fn main() void {
     std.debug.print("Entered main.zig\n", .{});

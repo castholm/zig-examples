@@ -3,20 +3,7 @@
 
 const std = @import("std");
 const builtin = @import("builtin");
-const c = @cImport({
-    if (builtin.target.os.tag == .windows and builtin.target.abi == .msvc) { // 0.16-dev regression workaround
-        @cDefine("SIZE_MAX", "((size_t)-1)");
-    }
-    if (builtin.target.os.tag == .emscripten) { // 0.16-dev regression workaround
-        @cDefine("wint_t", "int");
-        @cDefine("__DEFINED_wint_t", {});
-    }
-    @cDefine("SDL_DISABLE_OLD_NAMES", {});
-    @cInclude("SDL3/SDL.h");
-    @cInclude("SDL3/SDL_revision.h");
-    @cDefine("SDL_MAIN_HANDLED", {}); // We are providing our own entry point
-    @cInclude("SDL3/SDL_main.h");
-});
+const c = @import("c");
 
 pub const std_options: std.Options = .{ .log_level = .debug };
 
@@ -296,7 +283,7 @@ fn sdlAppIterate(appstate: ?*anyopaque) !c.SDL_AppResult {
         hit_brick,
         win,
         lose,
-    }) = .initEmpty();
+    }) = .empty;
 
     var won = false;
 
@@ -586,11 +573,11 @@ fn sdlAppIterate(appstate: ?*anyopaque) !c.SDL_AppResult {
         {
             var buf: [12]u8 = undefined;
             var time: f32 = @min(@as(f32, @floatFromInt(score)) / Timekeeper.updates_per_s, 99.999);
-            var text = try std.fmt.bufPrintZ(&buf, "TIME {d:0>6.3}", .{time});
+            var text = try std.fmt.bufPrintSentinel(&buf, "TIME {d:0>6.3}", .{time}, 0);
             try errify(c.SDL_SetRenderDrawColor(renderer, score_color[0], score_color[1], score_color[2], 0xff));
             try errify(c.SDL_RenderDebugText(renderer, 8, 8, text.ptr));
             time = @min(@as(f32, @floatFromInt(best_score)) / Timekeeper.updates_per_s, 99.999);
-            text = try std.fmt.bufPrintZ(&buf, "BEST {d:0>6.3}", .{time});
+            text = try std.fmt.bufPrintSentinel(&buf, "BEST {d:0>6.3}", .{time}, 0);
             try errify(c.SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff));
             try errify(c.SDL_RenderDebugText(renderer, window_w / 2 - 8 * 12, 8, text.ptr));
         }
@@ -956,7 +943,6 @@ inline fn errify(value: anytype) error{SdlError}!switch (@typeInfo(@TypeOf(value
 //#region SDL main callbacks boilerplate
 
 pub fn main() !u8 {
-    app_err.reset();
     var empty_argv: [0:null]?[*:0]u8 = .{};
     const status: u8 = @truncate(@as(c_uint, @bitCast(c.SDL_RunApp(empty_argv.len, @ptrCast(&empty_argv), sdlMainC, null))));
     return app_err.load() orelse status;
@@ -989,14 +975,10 @@ const ErrorStore = struct {
     const status_storing = 1;
     const status_stored = 2;
 
-    status: c.SDL_AtomicInt = .{},
+    status: c.SDL_AtomicInt = .{ .value = status_not_stored },
     err: anyerror = undefined,
     trace_index: usize = undefined,
     trace_addrs: [32]usize = undefined,
-
-    fn reset(es: *ErrorStore) void {
-        _ = c.SDL_SetAtomicInt(&es.status, status_not_stored);
-    }
 
     fn store(es: *ErrorStore, err: anyerror) c.SDL_AppResult {
         if (c.SDL_CompareAndSwapAtomicInt(&es.status, status_not_stored, status_storing)) {
