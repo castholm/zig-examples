@@ -8,19 +8,17 @@
     .minimum_zig_version = "0.17.0-dev",
     .dependencies = .{
         .sdl = .{
-            .url = "git+https://github.com/castholm/SDL.git#018241066ffdae90d8b11f8bdc6242202f0f5451",
-            .hash = "sdl-0.5.1+3.4.10-SDL--kbMpgGMXke11Ujh5HUPKch7G_SUAS12LI0QFoqj",
+            .url = "git+https://github.com/castholm/SDL.git#b72b3671502a70e109350ecac90afdc480dcfcc6",
+            .hash = "sdl-0.5.4+3.4.16-SDL--sQ4qAH3kwC19Zs1kxdHplaSDnWl2MUptZD4AItI",
         },
         .zigglgen = .{
             .url = "git+https://github.com/castholm/zigglgen.git#fdf06cc7ea9951203f91a27a5548f943cd6c1d59",
             .hash = "zigglgen-0.5.1-ziggljvILwAsVanrBL96ZTzHPQ1vIQCV_Gnt3mqufzjz",
         },
         .translate_c = .{
-            .url = "git+https://codeberg.org/ziglang/translate-c#c26bb176f3d63c8f3f57ac4e82d78f9124506b0d",
-            .hash = "translate_c-0.0.0-Q_BUWuEVBwCbZUsNorTQ6-d3nYx8KDgHHWtVWBzgzyB5",
+            .url = "git+https://codeberg.org/ziglang/translate-c#0944784e197e419433a21d4b28bfc65e48e7d514",
+            .hash = "translate_c-0.0.0-Q_BUWo5NBwBs3K0a-B1XbxEF3gFdTb75VgOE0FL-2qKL",
         },
     },
-    .paths = .{
-        "invalid", // Not intended for consumption as a package
-    },
+    .paths = .{"\x00"},
 }

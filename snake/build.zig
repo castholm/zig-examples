@@ -50,7 +50,7 @@ fn buildWeb(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.built
         std.log.err("'-Dsystem_include_path' is required when building SDL for Emscripten", .{});
         std.process.exit(1);
     };
-    const lto: ?std.zig.LtoMode = if (optimize != .Debug) .full else null;
+    const lto: ?std.zig.LtoMode = if (optimize != .debug) .full else null;
 
     const app_mod = b.createModule(.{
         .target = target,
@@ -95,28 +95,28 @@ fn buildWeb(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.built
     }
 
     run_emcc.addArgs(switch (optimize) {
-        .Debug => &.{
+        .debug => &.{
             "-O0",
             // Preserve DWARF debug information.
             "-g",
             // Use UBSan (full runtime).
             "-fsanitize=undefined",
         },
-        .ReleaseSafe => &.{
+        .safe => &.{
             "-O3",
             // Use UBSan (minimal runtime).
             "-fsanitize=undefined",
             "-fsanitize-minimal-runtime",
         },
-        .ReleaseFast => &.{
+        .fast => &.{
             "-O3",
         },
-        .ReleaseSmall => &.{
+        .small => &.{
             "-Oz",
         },
     });
 
-    if (optimize != .Debug) {
+    if (optimize != .debug) {
         // Perform link time optimization.
         run_emcc.addArg("-flto");
         // Minify JavaScript code.

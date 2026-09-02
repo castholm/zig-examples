@@ -20,13 +20,13 @@ Requires Zig 0.17.0-dev (master).
 zig build run
 
 # Cross-compile for Windows
-zig build -Dtarget=x86_64-windows-gnu -Doptimize=ReleaseFast
+zig build -Dtarget=x86_64-windows-gnu -Doptimize=fast
 
 # Cross-compile for Linux
-zig build -Dtarget=x86_64-linux-gnu -Doptimize=ReleaseFast
+zig build -Dtarget=x86_64-linux-gnu -Doptimize=fast
 
 # Build for the Web and serve locally (requires Emscripten)
 embuilder build sysroot
-zig build -Dtarget=wasm32-emscripten -Doptimize=ReleaseFast "-Dsystem_include_path=$(em-config CACHE)/sysroot/include"
+zig build -Dtarget=wasm32-emscripten -Doptimize=fast "-Dsystem_include_path=$(em-config CACHE)/sysroot/include"
 emrun zig-out/www/snake.html
 ```

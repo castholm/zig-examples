@@ -8,11 +8,9 @@
     .minimum_zig_version = "0.17.0-dev",
     .dependencies = .{
         .translate_c = .{
-            .url = "git+https://codeberg.org/ziglang/translate-c#c26bb176f3d63c8f3f57ac4e82d78f9124506b0d",
-            .hash = "translate_c-0.0.0-Q_BUWuEVBwCbZUsNorTQ6-d3nYx8KDgHHWtVWBzgzyB5",
+            .url = "git+https://codeberg.org/ziglang/translate-c#0944784e197e419433a21d4b28bfc65e48e7d514",
+            .hash = "translate_c-0.0.0-Q_BUWo5NBwBs3K0a-B1XbxEF3gFdTb75VgOE0FL-2qKL",
         },
     },
-    .paths = .{
-        "invalid", // Not intended for consumption as a package
-    },
+    .paths = .{"\x00"},
 }
