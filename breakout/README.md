@@ -31,7 +31,7 @@ Uses [castholm/SDL](https://github.com/castholm/SDL) to build SDL3 from source.
 
 ## Building
 
-Requires Zig 0.17.0-dev (master).
+Requires Zig 0.17.0.
 
 ```sh
 # Run the game
