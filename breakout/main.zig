@@ -81,7 +81,7 @@ var timekeeper: Timekeeper = undefined;
 var paddle: Paddle = undefined;
 var ball: Ball = undefined;
 var bricks_buf: [100]Brick = undefined;
-var bricks: std.ArrayListUnmanaged(Brick) = undefined;
+var bricks: std.ArrayList(Brick) = undefined;
 
 var score: u32 = undefined;
 var score_color: [3]u8 = undefined;
